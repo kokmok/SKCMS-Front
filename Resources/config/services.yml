@@ -1,0 +1,20 @@
+services:
+    skcms.twig.skcms_extension:
+        class: SKCMS\FrontBundle\Twig\SKCMSAdminExtension
+        arguments: [@service_container]
+        tags:
+            - { name: twig.extension }
+            
+#    skcms.varsinjector:
+#        class: SKCMS\FrontBundle\Service\SKCMSVarsInjector
+#        arguments: [@twig,@service_container]
+#        tags:
+##            - {name: kernel.event_listener, event: kernel.controller, method: onKernelRequest }
+#            - {name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
+    
+    skcms.varsinjector:
+
+        class:     SKCMS\FrontBundle\Service\SKCMSVarsInjector
+        arguments: [@twig,@service_container]
+        tags:
+            - { name: kernel.event_listener, event: skcms_front.event.prerender, method: onKernelRequest }

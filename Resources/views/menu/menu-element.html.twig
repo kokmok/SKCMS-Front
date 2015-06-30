@@ -1,0 +1,12 @@
+{#Feel Free to Overwrite#}
+
+<ul class="{%block skcmsMenuUlClass %}skcmsUlMenuLevel_{%endblock%}{{level}}">
+    {%for child in menuElement.children %}
+        <li>
+            <a href="{{child.link}}">{{child.name}}</a>
+            {%if child.children|length%}
+                {%include 'SKCMSFrontBundle:menu:menu-element.html.twig' with {menuElement:child,level:level+1}%}
+            {%endif%}
+        </li>
+    {%endfor %}
+</ul>

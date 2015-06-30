@@ -1,0 +1,40 @@
+skcms_front_home:
+    path:     /{_locale}
+    defaults: { _controller: SKCMSFrontBundle:Home:showHome, _locale: %locale%   }
+    requirements:
+        _locale: ^[a-z]{2}$
+        
+        
+#-------------- OTHER ENTITIES
+skcms_front_entity:
+    path:     /{slug}.{_format}
+    defaults: { _controller: SKCMSFrontBundle:Entity:showEntity }
+    requirements:
+        id: \d+
+        slug: ([a-z0-9-])+
+        
+
+skcms_front_entity_multilingue:
+    path:     /{_locale}/{slug}.{_format}
+    defaults: { _controller: SKCMSFrontBundle:Entity:showEntity }
+    requirements:
+        id: \d+
+        _locale: ^[a-z]{2,4}$
+        slug: ([a-z0-9-])+
+
+#-----------    PAGES
+skcms_front_page:
+    path:     /{slug}/{page}
+    defaults: { _controller: SKCMSFrontBundle:Page:showPage, page: 1 }
+    requirements:
+        page: \d+
+#        slug: ([^_])
+        
+skcms_front_page_multilingue:
+    path:     /{_locale}/{slug}/{page}
+    defaults: { _controller: SKCMSFrontBundle:Page:showPage, page: 1  }
+    requirements:
+        id: \d+
+        _locale: ^[a-z]{2,4}$
+        page: \d+
+
