@@ -40,11 +40,11 @@
 
 "autoload": {
 
-"psr-0": { "SKCMS\\Bundle\\FrontBundle":   "" }
+"psr-0": { "SKCMS\\FrontBundle":   "" }
 
 },
 
-"target-dir": "SKCMS/Bundle/FrontBundle",
+"target-dir": "SKCMS/FrontBundle",
 
 "minimum-stability":   "dev"
 
