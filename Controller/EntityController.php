@@ -58,10 +58,17 @@ class EntityController extends Controller
         
         $repo = $em->getRepository('\\'.$entityClass);
         $this->entity = $repo->find($translationEntity->getForeignKey(),$this->locale);
-//        $this->entity = $repo->findOneBy(['id'=>$translationEntity->getForeignKey()],null,null,$this->locale);
+
         $this->templateParams['entity'] = $this->entity;
-//        //dump($this->entity);
-//        die();
+
+        if ($this->entity instanceof \SKCMS\ShopBundle\Entity\SKBaseProduct)
+        {
+            $productUtils = $this->get('skcms_shop.productutils');
+            $productForm = $productUtils->getProductForm($this->entity);
+            $this->addTemplateParam('shopForm', $productForm);
+
+        }
+        
         parent::setTemplateParams();
         
     }

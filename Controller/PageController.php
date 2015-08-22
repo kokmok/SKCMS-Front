@@ -4,6 +4,8 @@ namespace SKCMS\FrontBundle\Controller;
 
 //use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use SKCMS\FrontBundle\Controller\FrontController as Controller;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+
 
 class PageController extends Controller
 {
@@ -16,6 +18,7 @@ class PageController extends Controller
     
     public function showPageAction($slug,$page,$_locale = null)
     {
+        
         if ($_locale == null)
         {
             $_locale = $this->getRequest()->getLocale();
@@ -25,6 +28,42 @@ class PageController extends Controller
         $this->slug = $slug;
         $this->pageNumber = $page;
         $this->setTemplateParams();
+        
+        if (null === $this->page)
+        {
+            throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException('page doesn\'t exists');
+        }
+        
+        if ($this->page->getRedirectRoute() !== null)
+        {
+            if ($this->page->getForward()=== true)
+            {
+                $router = $this->get('router');
+                $routes = $router->getRouteCollection();
+                $routeDefaults = $routes->get($this->page->getRedirectRoute())->getDefaults();
+                $controller = $routeDefaults['_controller'];
+                return $this->forward($controller);
+            }
+            else
+            {
+                $url = $this->generateUrl($this->page->getRedirectRoute());
+                return $this->redirect($url);
+            }
+            
+            
+            
+            
+        }
+        
+
+        if ($this->page->getMinRoleAccess() && $this->page->getMinRoleAccess() != 'ANON')
+        {
+            if (false === $this->get('security.context')->isGranted($this->page->getMinRoleAccess()))
+            {
+                throw new AccessDeniedException();
+            }
+        }
+        
         $this->processTemplate();
         return $this->renderPage();
     }
@@ -45,27 +84,13 @@ class PageController extends Controller
     
     protected function setTemplateParams()
     {
-       
-        
-//        $entitiesParams = $this->container->getParameter('skcms_admin.entities');
-//        $entityParams = $entitiesParams['Page'];
+
         
         $slugUtils = $this->get('skcms_core.slugutils');
         $page = $slugUtils->getPageBySlug($this->slug,$this->locale);
-//        $em = $this->getSKManager();
-//
-//        $repo = $this->getDoctrine()->getManager()->getRepository('SKCMS\CoreBundle\Entity\Translation\EntityTranslation');
-//        
-//        
-////        $page = $repo->findAllTranslations('slug',$slug,$entityParams['class']);
-//        $translationEntity = $repo->findObjectByTranslation('slug',$this->slug,$entityParams['class'],$this->locale);
-//        if (null == $translationEntity)
-//        {
-//            throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException('page doesn\'t exists');
-//        }
-//        
-//        $repo = $em->getRepository($entityParams['bundle'].'Bundle:Page');
-//        $this->templateParams['page'] = $repo->findFull($translationEntity->getForeignKey(),$this->locale);
+        
+        
+        
         $this->templateParams['page'] = $page;
         $this->page = $this->templateParams['page'];
         
@@ -75,7 +100,18 @@ class PageController extends Controller
         
         $this->addTemplateParam('currentPage', $this->pageNumber);
         
-//        $this->setCustomTemplateParams();
+        $contact = $this->get('skcms.contact.form');
+        $contactForm = $contact->get();
+        if ($contactForm instanceof \Symfony\Component\HttpFoundation\RedirectResponse)
+        {
+            $this->forceResponse  = $contactForm;
+        }
+        else
+        {
+            $this->addTemplateParam('contactForm', $contactForm);
+        }
+        
+
         parent::setTemplateParams();
         
     }

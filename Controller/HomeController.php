@@ -2,7 +2,7 @@
 
 namespace SKCMS\FrontBundle\Controller;
 
-use SKCMS\FrontBundle\Controller\FrontController as Controller;
+use SKCMS\FrontBundle\Controller\PageController as Controller;
 //use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 class HomeController extends Controller
@@ -12,10 +12,18 @@ class HomeController extends Controller
     protected $templateParams ;
     
     
-    public function showHomeAction($_locale)
+    public function showHomeAction( \Symfony\Component\HttpFoundation\Request $request)
     {
-//        $this->getRequest()->getSession()->set('_locale', $_locale);
+        
+        return $this->showHomeMultilingueAction($request->getLocale());
+        
+    }
+    
+    public function showHomeMultilingueAction($_locale )
+    {
+        
         $this->locale = $_locale;
+        $this->slug = 'home';
         $this->setTemplateParams();
         $this->modifyTemplate('SKCMSFrontBundle:pages-templates:home.html.twig');
         return $this->renderPage();

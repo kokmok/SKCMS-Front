@@ -1,6 +1,10 @@
 skcms_front_home:
+    path:     /
+    defaults: { _controller: SKCMSFrontBundle:Home:showHome }
+    
+skcms_front_home_multilingue:
     path:     /{_locale}
-    defaults: { _controller: SKCMSFrontBundle:Home:showHome, _locale: %locale%   }
+    defaults: { _controller: SKCMSFrontBundle:Home:showHomeMultilingue, _locale: %locale%   }
     requirements:
         _locale: ^[a-z]{2}$
         

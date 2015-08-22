@@ -37,7 +37,8 @@ class SKCMSAdminExtension extends \Twig_Extension
             new \Twig_SimpleFilter('beautifulDate', [$this,'beautifulDate']),
             new \Twig_SimpleFilter('skEntityPath', [$this,'skEntityPath']),
             new \Twig_SimpleFilter('translation', [$this,'translation']),
-            new \Twig_SimpleFilter('shuffle', [$this,'shuffle'])
+            new \Twig_SimpleFilter('shuffle', [$this,'shuffle']),
+            new \Twig_SimpleFilter('validPromotion', [$this,'validPromotion'])
         );
     }
     
@@ -47,9 +48,26 @@ class SKCMSAdminExtension extends \Twig_Extension
     public function getFunctions()
     {
         return array(
-            new \Twig_SimpleFunction('switchLanguageLink',[$this,'switchLanguageLink'])
+            new \Twig_SimpleFunction('switchLanguageLink',[$this,'switchLanguageLink']),
+            new \Twig_SimpleFunction('isHomePage',[$this,'isHomePage'])
             
         );
+    }
+    
+    static public function validPromotion(\SKCMS\ShopBundle\Entity\Promotion $promotion= null)
+    {
+        if (null===$promotion)
+        {
+            return false;
+        }
+        $now = new \DateTime();
+        $nowts = $now->getTimestamp();
+        
+        if ($promotion->isActive() && $promotion->getDateStart()->getTimestamp() < $nowts && $promotion->getDateEnd()->getTimestamp()> $nowts)
+        {
+            return true;
+        }
+        return false;
     }
     
     public function shuffle($input)
@@ -59,6 +77,11 @@ class SKCMSAdminExtension extends \Twig_Extension
             shuffle($input);
         }
         return $input;
+    }
+    public function isHomePage()
+    {
+        $isHome =  $this->container->get('request')->get('route') == 'skcms_front_home' || $this->container->get('request')->get('route') == 'skcms_front_home' ? true : false;
+        return $isHome;
     }
     public function switchLanguageLink($translatedLocale)
     {
@@ -110,6 +133,10 @@ class SKCMSAdminExtension extends \Twig_Extension
     
     public function skEntityPath($entity,$format = 'html',$mulilingue = true,$absolute = false)
     {
+//        if ($entity === null)
+//        {
+//            return null;
+//        }
         $this->locale = $this->container->get('request')->getLocale();
         $router = $this->container->get('router');
         
