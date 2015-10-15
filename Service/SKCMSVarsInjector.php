@@ -34,6 +34,7 @@ class SKCMSVarsInjector
         $this->addContactInfo();
         $this->addCart();
         
+        $this->twig->addGlobal('skcmsVars', null);
         $this->twig->addGlobal('skcmsVars', $this->skcmsTwigVars);
     }
     
