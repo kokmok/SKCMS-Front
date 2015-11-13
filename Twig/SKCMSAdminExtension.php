@@ -133,16 +133,33 @@ class SKCMSAdminExtension extends \Twig_Extension
     
     public function skEntityPath($entity,$format = 'html',$mulilingue = true,$absolute = false)
     {
-//        if ($entity === null)
+        if ($entity === null)
 //        {
 //            return null;
 //        }
         $this->locale = $this->container->get('request')->getLocale();
         $router = $this->container->get('router');
         
+        if ($entity instanceof \SKCMS\CoreBundle\Entity\SKBasePage)
+        {
+            $route = $mulilingue ? 'skcms_front_page_multilingue' : 'skcms_front_page';
+            $params = $mulilingue ? ['slug'=>$entity->getSlug(),'_locale'=>$this->locale] : ['slug'=>$entity->getSlug()];
+            if ($entity->getSlug()=='home')
+            {
+                $route = $mulilingue ? 'skcms_front_home_multilingue' : 'skcms_front_home';
+                $params = $mulilingue ? ['_locale'=>$this->locale] : [];
+            }
+            
+        }
+        else
+        {
+            $route = $mulilingue ? 'skcms_front_entity_multilingue' : 'skcms_front_entity';
+            $params = $mulilingue ? ['slug'=>$entity->getSlug(),'_locale'=>$this->locale,'_format'=>$format] : ['slug'=>$entity->getSlug(),'_format'=>$format];
+        }
+        
         return $router->generate(
-                $mulilingue ? 'skcms_front_entity_multilingue' : 'skcms_front_entity',
-                $mulilingue ? ['slug'=>$entity->getSlug(),'_locale'=>$this->locale,'_format'=>$format] : ['slug'=>$entity->getSlug(),'_format'=>$format],
+                $route,
+                $params,
                 $absolute
                 );
         
