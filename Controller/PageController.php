@@ -99,18 +99,16 @@ class PageController extends Controller
         $this->templateParams['lists'] = $listUtils->getPageList($this->page);
         
         $this->addTemplateParam('currentPage', $this->pageNumber);
-        
-        $contact = $this->get('skcms.contact.form');
-        $contactForm = $contact->get();
-        if ($contactForm instanceof \Symfony\Component\HttpFoundation\RedirectResponse)
-        {
-            $this->forceResponse  = $contactForm;
+        $modulesConfig = $this->getParameter('skcms_admin.modules');
+        if ($modulesConfig['contact']['enabled']) {
+            $contact = $this->get('skcms.contact.form');
+            $contactForm = $contact->get();
+            if ($contactForm instanceof \Symfony\Component\HttpFoundation\RedirectResponse) {
+                $this->forceResponse = $contactForm;
+            } else {
+                $this->addTemplateParam('contactForm', $contactForm);
+            }
         }
-        else
-        {
-            $this->addTemplateParam('contactForm', $contactForm);
-        }
-        
 
         parent::setTemplateParams();
         
