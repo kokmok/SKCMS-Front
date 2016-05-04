@@ -2,6 +2,7 @@
 
 namespace SKCMS\FrontBundle\Service;
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 /**
  * Description of SKCMSVarsInjector
@@ -11,10 +12,14 @@ use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 class SKCMSVarsInjector 
 {
     protected $twig;
+    /**
+     * @var ContainerInterface
+     */
     protected $container;
     protected $locale;
     protected $skcmsTwigVars;
     protected $multilingue;
+    protected $skcmsModules;
 
     public function __construct(\Twig_Environment $twig, $container)
     {
@@ -22,6 +27,7 @@ class SKCMSVarsInjector
         $this->twig = $twig;
         $this->container = $container;
         $this->skcmsTwigVars = [];
+        $this->skcmsModules = $container->getParameter('skcms_admin.modules');
     }
 
     public function onKernelRequest(\SKCMS\FrontBundle\Event\PreRenderEvent $event)
@@ -33,6 +39,7 @@ class SKCMSVarsInjector
         $this->addSiteInfo();
         $this->addContactInfo();
         $this->addCart();
+        $this->addBlog();
         
         $this->twig->addGlobal('skcmsVars', null);
         $this->twig->addGlobal('skcmsVars', $this->skcmsTwigVars);
@@ -80,5 +87,23 @@ class SKCMSVarsInjector
             $this->skcmsTwigVars['cart'] = $cart;
         }
         
+    }
+    public function addBlog()
+    {
+
+        if ($this->skcmsModules['blog']['enabled'])
+        {
+            $tags = $this->container->get('doctrine')->getManager()->getRepository('SKCMSBlogBundle:BlogTag')->findAll();
+            $this->skcmsTwigVars['blog']['tags'] = $tags;
+
+            $lastestPosts = $this->container->get('doctrine')->getManager()->getRepository('SKCMSBlogBundle:BlogPost')->findBy(
+                [],
+                ['id'=>'DESC'],
+                5
+            );
+            $this->skcmsTwigVars['blog']['lastestPosts'] = $lastestPosts;
+
+        }
+
     }
 }
