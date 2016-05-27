@@ -89,11 +89,13 @@ class PageController extends Controller
         $slugUtils = $this->get('skcms_core.slugutils');
         $page = $slugUtils->getPageBySlug($this->slug,$this->locale);
         
-        
+
         
         $this->templateParams['page'] = $page;
         $this->page = $this->templateParams['page'];
-        
+        if ($page === null){
+            return;
+        }
         
         $listUtils = $this->get('skcms_core.listsutils');
         $this->templateParams['lists'] = $listUtils->getPageList($this->page);
