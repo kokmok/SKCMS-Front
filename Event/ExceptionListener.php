@@ -18,9 +18,16 @@ class ExceptionListener
 
     public function onException(GetResponseForExceptionEvent $event){
 
-        $event = new \SKCMS\FrontBundle\Event\PreRenderEvent($event->getRequest());
-        $this->eventDispatcher
-            ->dispatch(\SKCMS\FrontBundle\Event\SKCMSFrontEvents::PRE_RENDER, $event);
+        $allowedCodes = [404,403];
+
+        if (in_array($event->getException()->getCode(),$allowedCodes)){
+            $event = new \SKCMS\FrontBundle\Event\PreRenderEvent($event->getRequest());
+            $this->eventDispatcher
+                ->dispatch(\SKCMS\FrontBundle\Event\SKCMSFrontEvents::PRE_RENDER, $event);
+
+        }
+
+
 
     }
 
