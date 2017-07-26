@@ -32,8 +32,8 @@ class SKCMSVarsInjector
 
     public function onKernelRequest(\SKCMS\FrontBundle\Event\PreRenderEvent $event)
     {
-     
-        $this->multilingue = count($this->container->getParameter('skcms_admin.siteInfo'))['locales']>1;
+
+        $this->multilingue = count($this->container->getParameter('skcms_admin.siteInfo')['locales'])>1;
         
         $this->addMenus();
         $this->addSiteInfo();
