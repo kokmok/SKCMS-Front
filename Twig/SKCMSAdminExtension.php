@@ -90,6 +90,9 @@ class SKCMSAdminExtension extends \Twig_Extension
         
         
         $route = $this->container->get('request')->get('_route');
+        if ($route === "skcms_front_home"){
+            $route = 'skcms_front_home_multilingue';
+        }
         $this->locale = $this->container->get('request')->getLocale();
         
         $routeParams = $this->container->get('request')->get('_route_params');
